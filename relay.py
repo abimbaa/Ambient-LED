@@ -1,20 +1,19 @@
-# relay.py
+
 import asyncio
 import signal
 from bleak import BleakClient, BleakScanner, BleakError
 
-# ---------------- CONFIG ----------------
+
 NAME = "ELK-BLEDDM"
 MAX_CONNECT_TRIES = 5
-RETRY_DELAY = 1.0  # seconds
+RETRY_DELAY = 1.0 
 
-# ---------------- GLOBALS ----------------
+
 client: BleakClient | None = None
 WRITE_UUID: str | None = None
 NOTIFY_UUID: str | None = None
 stop_flag = False
 
-# ---------------- HELPERS ----------------
 def handle_notify(sender, data: bytearray):
     print(f"[BLE] Notify from {sender}: {data.hex()}")
 
@@ -25,7 +24,7 @@ def handle_sigint(sig, frame):
 def makeCMD(r=255, g=255, b=255, a=255) -> bytes:
     return bytes([0x7E, 0x00, 0x05, 0x03, r, g, b, a, 0xEF])
 
-# ---------------- BLE FUNCTIONS ----------------
+
 async def connect_led(name: str = NAME) -> bool:
     """
     Connect to BLE device dynamically by name.
@@ -49,7 +48,7 @@ async def connect_led(name: str = NAME) -> bool:
         await client.connect()
         print(f"[BLE] Connected to {name} at {device.address}")
 
-        # Discover services
+
         for service in client.services:
             for char in service.characteristics:
                 if 'notify' in char.properties and len(char.properties) == 1:
@@ -58,7 +57,6 @@ async def connect_led(name: str = NAME) -> bool:
                     WRITE_UUID = char.uuid
         await asyncio.sleep(1)
 
-        # Subscribe to notify with retries
         for _ in range(MAX_CONNECT_TRIES * 2):
             try:
                 await client.start_notify(NOTIFY_UUID, handle_notify)
@@ -83,7 +81,7 @@ async def connect_led(name: str = NAME) -> bool:
         client = None
         return False
 
-async def write_led(r=255, g=255, b=255, a=0, name: str = NAME):
+async def write_led(r=255, g=255, b=255, a=255, name: str = NAME):
     """
     Write color command to BLE device.
     Will auto-connect if not connected.
@@ -96,7 +94,10 @@ async def write_led(r=255, g=255, b=255, a=0, name: str = NAME):
             return
 
     try:
-        await client.write_gatt_char(WRITE_UUID, makeCMD(r, g, b, a), response=False)
+        nr = int(r * a / 255)
+        ng = int(g * a / 255)
+        nb = int(b * a / 255)
+        await client.write_gatt_char(WRITE_UUID, makeCMD(nr, ng, nb, a), response=False)
         print(f"[BLE] Command sent: {r},{g},{b},{a}")
     except Exception as e:
         print(f"[BLE] Write failed: {e}")
