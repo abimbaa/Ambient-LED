@@ -1,4 +1,4 @@
-# api.py
+
 import asyncio
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -12,7 +12,7 @@ class LEDCommand(BaseModel):
     g: int
     b: int
     a: int = 0
-    name: str = "ELK-BLEDDM"  # Optional, dynamic device name
+    name: str = "ELK-BLEDDM"  
 
 @app.on_event("startup")
 async def startup_event():
@@ -54,3 +54,7 @@ async def status():
     if client and client.is_connected:
         return {"connected": True}
     return {"connected": False}
+
+### run with 'uvicorn led_api:app --host 0.0.0.0 --port 8000'
+
+### use with 'curl -X POST "http://127.0.0.1:8000/led" -H "Content-Type: application/json" -d "{\"r\":255,\"g\":0,\"b\":0}"'
