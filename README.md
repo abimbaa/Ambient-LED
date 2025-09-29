@@ -32,8 +32,8 @@ from relay import connect_led, write_led, disconnect_led
 # Connect to LED strip (default name is 'ELK-BLEDDM')
 connect_led(name="ELK-BLEDDM")
 
-# Send a color update (red=255, green=100, blue=50, brightness=1.0)
-write_led(255, 100, 50, brightness=1.0)
+# Send a color update (red=255, green=255, blue=255, brightness=255) by default
+write_led(255, 255, 255, brightness=255)
 
 # Disconnect from the LED strip
 disconnect_led()
