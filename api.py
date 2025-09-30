@@ -55,6 +55,6 @@ async def status():
         return {"connected": True}
     return {"connected": False}
 
-### run with 'uvicorn led_api:app --host 0.0.0.0 --port 8000'
+### run with 'uvicorn api:app --host 0.0.0.0 --port 8000'
 
-### use with 'curl -X POST "http://127.0.0.1:8000/led" -H "Content-Type: application/json" -d "{\"r\":255,\"g\":0,\"b\":0}"'
+### use with 'curl -X POST "http://127.0.0.1:8000/led" -H "Content-Type: application/json" -d "{\"r\":255,\"g\":255,\"b\":255,\"a\":255}"'
